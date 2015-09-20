@@ -1,0 +1,3 @@
+	anaconda.SetConsumerKey("B4shSq2RD8qEGYWliZFCksqqz")
+	anaconda.SetConsumerSecret("4lLQ2nT5Bs7008ty3HQ2i9YRaEf9TiNEcaRHohURsqrtsYmN85")
+	api := anaconda.NewTwitterApi("590684771-FjZN3O2Q1SPC8VvBVJ0saZ7iEpVx4jSWDjbDFz5E", "TPC5KBgzM85ncaUncbavedZMPm6xobt2bW3OM4QPYPtQv")
