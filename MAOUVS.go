@@ -8,7 +8,8 @@ import "time"
 import "math/rand"
 import "strconv"
 
-var tag = " #MAOUVS"
+var tag string = " #MAOUVS"
+var deadcounter int = 0
 
 func showTimeLine(api *anaconda.TwitterApi, v url.Values) {
   tweets, err := api.GetHomeTimeline(v)
@@ -27,14 +28,28 @@ func gameGenerator(api *anaconda.TwitterApi) func(anaconda.Tweet) bool{
   var enemyTp int = 0  //Tp is Tame Point
   var myTp int = 0
   var turn int = 0
-  var maouRoutine = [3][10]int{
+  var maouRoutines = [3][3][10]int{
+  {
     {0,1,0,2,0,0,0,2,0,1},  //攻撃60%防御20%タメ20%
     {1,1,1,0,0,2,2,1,1,1},  //攻撃20%防御60%タメ20%
     {0,1,1,0,2,0,1,1,1,0},  //攻撃40%防御50%タメ10%
+  },
+  {
+    {0,1,0,0,0,0,0,0,0,1},  //攻撃80%防御20%タメ0%
+    {0,1,0,0,0,2,2,0,0,0},  //攻撃70%防御10%タメ20%
+    {0,1,0,0,2,0,0,1,0,0},  //攻撃70%防御20%タメ10%
+  },
+  {
+    {0,2,2,2,2,2,2,2,2,0},  //攻撃20%防御0%タメ80%
+    {2,2,2,2,1,1,2,2,2,2},  //攻撃0%防御20%タメ80%
+    {2,0,2,2,2,1,2,2,0,2},  //攻撃20%防御10%タメ70%
+  },
   }
   var commands =[4]string{"こうげき","ぼうぎょ","ため","ひっさつ"}
   var lossRep = " あなたの負けです"
   var winRep = " あなたの勝ちです"
+
+  maouRoutine := maouRoutines[ deadcounter%len(maouRoutines) ]
 
   //げーむるーちん
   return func (tweet anaconda.Tweet) bool{
@@ -53,7 +68,7 @@ func gameGenerator(api *anaconda.TwitterApi) func(anaconda.Tweet) bool{
     turn++
     turn %= len(maouRoutine)
     rand.Seed(time.Now().UnixNano())
-    routine := rand.Intn(10)
+    routine := rand.Intn(len(maouRoutine[0]))
     mact := maouRoutine[turn][routine]
     if enemyTp == 3{
       mact = 3
@@ -108,6 +123,7 @@ func gameGenerator(api *anaconda.TwitterApi) func(anaconda.Tweet) bool{
 
     if enemyHp <= 0{
       sendmess += winRep
+      deadcounter++
     }else if myHp <= 0{
       sendmess += lossRep
     }
